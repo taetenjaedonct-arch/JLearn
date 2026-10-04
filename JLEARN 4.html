@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 J-Learn - เรียนภาษาญี่ปุ่นสนุกๆ</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --sakura-pink: #ffb7c5;
+      --sakura-light: #fff0f5;
+      --pastel-purple: #e2d4f9;
+      --pastel-purple-dark: #8a63d2;
+      --pastel-blue: #d2e9e9;
+      --pastel-blue-dark: #417d7a;
+      --pastel-yellow: #fff3bf;
+      --text-main: #4a4a4a;
+      --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #e2d4f9 50%, #d2e9e9 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Zen Maru Gothic', 'Kanit', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--text-main);
+      padding: 15px 10px;
+    }
+
+    header { text-align: center; margin-bottom: 20px; }
+
+    .brand-title {
+      font-family: 'Mochiy Pop One', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      color: #ff6b81;
+      text-shadow: 2px 2px 0px #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .brand-subtitle { font-size: clamp(0.85rem, 3vw, 1.1rem); color: #7058a3; margin-top: 5px; }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      font-family: 'Kanit', sans-serif;
+      font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+      font-weight: 600;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 20px;
+      background: white;
+      color: var(--pastel-purple-dark);
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--sakura-pink);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3);
+    }
+
+    .controls { max-width: 600px; margin: 0 auto 20px auto; display: flex; gap: 10px; }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 16px;
+      border: 2px solid white;
+      border-radius: 20px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .search-input:focus { border-color: var(--sakura-pink); }
+
+    .cards-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 15px;
+    }
+
+    /* 3D Flip Card */
+    .flip-card { background-color: transparent; height: 170px; perspective: 1000px; cursor: pointer; }
+    .flip-card-inner {
+      position: relative; width: 100%; height: 100%; text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d; border-radius: 18px;
+      box-shadow: 0 6px 16px rgba(138, 99, 210, 0.08);
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front, .flip-card-back {
+      position: absolute; width: 100%; height: 100%;
+      -webkit-backface-visibility: hidden; backface-visibility: hidden;
+      border-radius: 18px; padding: 15px; display: flex;
+      flex-direction: column; justify-content: center; align-items: center;
+      background: white; border: 2px solid #fff;
+    }
+    .flip-card-back { background: var(--pastel-purple); color: #4a2e80; transform: rotateY(180deg); }
+
+    .word-title { font-size: 1.6rem; font-weight: 700; color: #ff6b81; margin-bottom: 4px; }
+    .word-reading { font-size: 0.95rem; color: #8a63d2; }
+    .word-meaning { font-size: 1.1rem; font-weight: 600; }
+
+    .badge {
+      position: absolute; top: 10px; right: 10px; padding: 2px 8px;
+      font-size: 0.7rem; border-radius: 10px; background: var(--pastel-blue);
+      color: var(--pastel-blue-dark); font-weight: 600;
+    }
+    .audio-btn { position: absolute; bottom: 8px; left: 10px; background: none; border: none; font-size: 1.1rem; cursor: pointer; }
+
+    /* Kanji & Grammar Cards */
+    .kanji-card { background: white; border-radius: 18px; padding: 15px; box-shadow: 0 6px 16px rgba(0,0,0,0.05); border-top: 4px solid var(--sakura-pink); text-align: center; }
+    .kanji-char { font-size: 2.8rem; font-weight: bold; color: #ff6b81; }
+    .grammar-card { background: white; border-radius: 18px; padding: 18px; box-shadow: 0 6px 16px rgba(0,0,0,0.05); border-left: 5px solid var(--pastel-purple-dark); }
+    .grammar-title { font-size: 1.2rem; color: var(--pastel-purple-dark); margin-bottom: 5px; font-weight: bold; }
+    .grammar-usage { font-size: 0.85rem; background: #f4effc; padding: 4px 10px; border-radius: 8px; color: #583c8e; display: inline-block; margin-bottom: 6px; }
+
+    /* Interactive Game Area */
+    .game-box {
+      max-width: 650px; margin: 0 auto; background: white; border-radius: 20px;
+      padding: 20px 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-align: center;
+    }
+    .game-title { font-size: 1.5rem; color: #ff6b81; margin-bottom: 12px; font-weight: bold; }
+    .quiz-question { font-size: 1.8rem; font-weight: bold; color: var(--pastel-purple-dark); margin: 15px 0; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .option-btn {
+      padding: 12px 8px; border: 2px solid var(--pastel-purple); border-radius: 14px;
+      background: white; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+      font-family: 'Kanit', sans-serif; word-break: break-word;
+    }
+    .option-btn:hover { background: var(--sakura-light); border-color: var(--sakura-pink); }
+
+    /* 🧩 Matching Game Responsive Grid */
+    .match-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .match-grid { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 8px; 
+      margin-top: 12px; 
+    }
+
+    @media (min-width: 480px) {
+      .match-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    }
+
+    .match-card {
+      background: var(--pastel-blue); 
+      border-radius: 12px; 
+      min-height: 70px;
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 600;
+      cursor: pointer; 
+      transition: all 0.2s; 
+      padding: 6px 4px; 
+      text-align: center; 
+      font-size: clamp(0.75rem, 2.8vw, 0.95rem);
+      line-height: 1.2;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      user-select: none;
+    }
+    .match-card.selected { background: var(--sakura-pink); color: white; transform: scale(1.03); }
+    .match-card.matched { visibility: hidden; opacity: 0; pointer-events: none; }
+
+    /* Dictionary List */
+    .dict-item {
+      background: white; border-radius: 14px; padding: 12px 16px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+      font-size: 0.95rem;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">🌸 J-Learn</div>
+    <div class="brand-subtitle">สื่อการเรียนรู้ภาษาญี่ปุ่นแบบอินเทอร์แอคทีฟ</div>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('vocab')">📖 คำศัพท์</button>
+    <button class="tab-btn" onclick="switchTab('kanji')">✍️ คันจิ</button>
+    <button class="tab-btn" onclick="switchTab('grammar')">🧩 ไวยากรณ์</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">🎯 ควิซตอบคำถาม</button>
+    <button class="tab-btn" onclick="switchTab('matching')">🧩 เกมจับคู่</button>
+    <button class="tab-btn" onclick="switchTab('speed')">⚡ สปีดชาเลนจ์</button>
+    <button class="tab-btn" onclick="switchTab('dict')">📚 พจนานุกรม</button>
+  </div>
+
+  <div class="controls" id="searchBox">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 ค้นหาคำศัพท์, คำอ่าน, ความหมาย..." oninput="filterData()">
+  </div>
+
+  <main class="cards-container" id="cardsContainer"></main>
+  <div id="gameArea" class="hidden"></div>
+
+  <script>
+    const appData = {
+      "vocabulary": [
+        {"id": "vocab_001", "word": "アンケート", "reading": "あんけーと", "meaning_th": "แบบสอบถาม", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_002", "word": "如何", "reading": "いかが", "meaning_th": "เป็นอย่างไร / อย่างไรบ้าง", "jlpt_level": "N4", "part_of_speech": "adverb"},
+        {"id": "vocab_003", "word": "色々", "reading": "いろいろ", "meaning_th": "หลากหลาย / ต่าง ๆ", "jlpt_level": "N4", "part_of_speech": "na-adjective"},
+        {"id": "vocab_004", "word": "大勢", "reading": "おおぜい", "meaning_th": "คนจำนวนมาก", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_005", "word": "お茶", "reading": "おちゃ", "meaning_th": "ชา", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_006", "word": "外来語", "reading": "がいらいご", "meaning_th": "คำภาษาต่างประเทศ", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_007", "word": "学習環境", "reading": "がくしゅうかんきょう", "meaning_th": "สภาพแวดล้อมการเรียน", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_008", "word": "学校生活", "reading": "がっこうせいかつ", "meaning_th": "ชีวิตในโรงเรียน", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_009", "word": "環境", "reading": "かんきょう", "meaning_th": "สิ่งแวดล้อม", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_010", "word": "給料", "reading": "きゅうりょう", "meaning_th": "เงินเดือน", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_011", "word": "グラフ", "reading": "ぐらふ", "meaning_th": "กราฟ", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_012", "word": "現在", "reading": "げんざい", "meaning_th": "ปัจจุบัน / ตอนนี้", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_013", "word": "建築", "reading": "けんちく", "meaning_th": "สถาปัตยกรรม", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_014", "word": "講義", "reading": "こうぎ", "meaning_th": "การบรรยาย", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_015", "word": "黒板", "reading": "こくばん", "meaning_th": "กระดานดำ", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_016", "word": "言葉", "reading": "ことば", "meaning_th": "ภาษา / คำศัพท์", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_017", "word": "雑誌", "reading": "ざっし", "meaning_th": "นิตยสาร", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_018", "word": "字", "reading": "じ", "meaning_th": "ตัวอักษร", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_019", "word": "仕事", "reading": "しごと", "meaning_th": "งาน", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_020", "word": "生活", "reading": "せいかつ", "meaning_th": "ชีวิต / การใช้ชีวิต", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_021", "word": "生活意識", "reading": "せいかついしき", "meaning_th": "ตระหนักในการใช้ชีวิต", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_022", "word": "調査", "reading": "ちょうさ", "meaning_th": "การสำรวจ / วิจัย", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_023", "word": "生活環境", "reading": "せいかつかんきょう", "meaning_th": "สภาพแวดล้อมชีวิต", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_024", "word": "専門", "reading": "せんもん", "meaning_th": "สาขาวิชา", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_025", "word": "それに", "reading": "それに", "meaning_th": "นอกจากนี้ / อีกทั้ง", "jlpt_level": "N4", "part_of_speech": "conjunction"},
+        {"id": "vocab_026", "word": "例えば", "reading": "たとえば", "meaning_th": "ตัวอย่างเช่น", "jlpt_level": "N4", "part_of_speech": "adverb"},
+        {"id": "vocab_027", "word": "違い", "reading": "ちがい", "meaning_th": "ความแตกต่าง", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_028", "word": "地下鉄", "reading": "ちかてつ", "meaning_th": "รถไฟใต้ดิน", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_029", "word": "どうして", "reading": "どうして", "meaning_th": "ทำไม", "jlpt_level": "N5", "part_of_speech": "interrogative"},
+        {"id": "vocab_030", "word": "所", "reading": "ところ", "meaning_th": "สถานที่ / จุด", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_031", "word": "どの", "reading": "どの", "meaning_th": "ไหน / อันไหน", "jlpt_level": "N5", "part_of_speech": "pre-noun adjectival"},
+        {"id": "vocab_032", "word": "生活について", "reading": "せいかつについて", "meaning_th": "เกี่ยวกับชีวิต", "jlpt_level": "N4", "part_of_speech": "expression"},
+        {"id": "vocab_033", "word": "学生にとって", "reading": "がくせいにとって", "meaning_th": "สำหรับนักเรียน", "jlpt_level": "N3", "part_of_speech": "expression"},
+        {"id": "vocab_034", "word": "初め", "reading": "はじめ", "meaning_th": "ตอนแรก / จุดเริ่มต้น", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_035", "word": "物価", "reading": "ぶっか", "meaning_th": "ราคาสินค้า", "jlpt_level": "N3", "part_of_speech": "noun"},
+        {"id": "vocab_036", "word": "本当に", "reading": "ほんとうに", "meaning_th": "จริง ๆ", "jlpt_level": "N5", "part_of_speech": "adverb"},
+        {"id": "vocab_037", "word": "問題", "reading": "もんだい", "meaning_th": "ปัญหา / ข้อคำถาม", "jlpt_level": "N4", "part_of_speech": "noun"},
+        {"id": "vocab_038", "word": "ゆっくり", "reading": "ゆっくり", "meaning_th": "ช้า ๆ / สบาย ๆ", "jlpt_level": "N5", "part_of_speech": "adverb"},
+        {"id": "vocab_039", "word": "留学生", "reading": "りゅうがくせい", "meaning_th": "นักเรียนต่างชาติ", "jlpt_level": "N5", "part_of_speech": "noun"},
+        {"id": "vocab_040", "word": "多い", "reading": "おおい", "meaning_th": "มาก / เยอะ", "jlpt_level": "N5", "part_of_speech": "i-adjective"},
+        {"id": "vocab_041", "word": "厳しい", "reading": "きびしい", "meaning_th": "เข้มงวด", "jlpt_level": "N4", "part_of_speech": "i-adjective"},
+        {"id": "vocab_042", "word": "寂しい", "reading": "さびしい", "meaning_th": "เหงา / ว้าเหว่", "jlpt_level": "N4", "part_of_speech": "i-adjective"},
+        {"id": "vocab_043", "word": "少ない", "reading": "すくない", "meaning_th": "น้อย", "jlpt_level": "N5", "part_of_speech": "i-adjective"},
+        {"id": "vocab_044", "word": "早い", "reading": "はやい", "meaning_th": "เร็ว / เช้า", "jlpt_level": "N5", "part_of_speech": "i-adjective"},
+        {"id": "vocab_045", "word": "難しい", "reading": "むずかしい", "meaning_th": "ยาก", "jlpt_level": "N5", "part_of_speech": "i-adjective"},
+        {"id": "vocab_046", "word": "安全な", "reading": "あんぜんな", "meaning_th": "ปลอดภัย", "jlpt_level": "N4", "part_of_speech": "na-adjective"},
+        {"id": "vocab_047", "word": "暇な", "reading": "ひまな", "meaning_th": "ว่าง / ไม่มีไรทำ", "jlpt_level": "N5", "part_of_speech": "na-adjective"},
+        {"id": "vocab_048", "word": "当てはまる", "reading": "あてはまる", "meaning_th": "ตรงกับ / เข้าข่าย", "jlpt_level": "N2", "part_of_speech": "verb"},
+        {"id": "vocab_049", "word": "インタビューする", "reading": "いんたびゅーする", "meaning_th": "สัมภาษณ์", "jlpt_level": "N4", "part_of_speech": "verb"},
+        {"id": "vocab_050", "word": "覚える", "reading": "おぼえる", "meaning_th": "จำ / เรียนรู้", "jlpt_level": "N5", "part_of_speech": "verb"},
+        {"id": "vocab_051", "word": "思う", "reading": "おもう", "meaning_th": "คิด / รู้สึก", "jlpt_level": "N4", "part_of_speech": "verb"},
+        {"id": "vocab_052", "word": "聞く", "reading": "きく", "meaning_th": "ถาม / สอบถาม", "jlpt_level": "N5", "part_of_speech": "verb"},
+        {"id": "vocab_053", "word": "欠席する", "reading": "けっせきする", "meaning_th": "ขาดเรียน", "jlpt_level": "N4", "part_of_speech": "verb"},
+        {"id": "vocab_054", "word": "困る", "reading": "こまる", "meaning_th": "ลำบาก / เดือดร้อน", "jlpt_level": "N4", "part_of_speech": "verb"},
+        {"id": "vocab_055", "word": "○を付ける", "reading": "まるをつける", "meaning_th": "กาเครื่องหมายวงกลม", "jlpt_level": "N4", "part_of_speech": "verb"},
+        {"id": "vocab_056", "word": "友達ができる", "reading": "ともだちができる", "meaning_th": "ได้เพื่อนใหม่", "jlpt_level": "N5", "part_of_speech": "verb"},
+        {"id": "vocab_057", "word": "慣れる", "reading": "なれる", "meaning_th": "คุ้นเคย / ปรับตัวชิน", "jlpt_level": "N4", "part_of_speech": "verb"}
+      ],
+      "kanji": [
+        {"id": "kanji_076", "kanji": "新", "meaning_th": "ใหม่", "kunyomi": "あたらしい", "onyomi": "シン", "vocabulary_examples": [{"word": "新しい", "meaning_th": "ใหม่"}, {"word": "新車", "meaning_th": "รถใหม่"}]},
+        {"id": "kanji_077", "kanji": "古", "meaning_th": "เก่า", "kunyomi": "ふるい", "onyomi": "コ", "vocabulary_examples": [{"word": "古い", "meaning_th": "เก่า"}, {"word": "古本", "meaning_th": "หนังสือเก่า"}]},
+        {"id": "kanji_078", "kanji": "長", "meaning_th": "ยาว, หัวหน้า", "kunyomi": "ながい", "onyomi": "チョウ", "vocabulary_examples": [{"word": "長い", "meaning_th": "ยาว"}, {"word": "長男", "meaning_th": "ลูกชายคนโต"}]},
+        {"id": "kanji_079", "kanji": "短", "meaning_th": "สั้น", "kunyomi": "みじかい", "onyomi": "タン", "vocabulary_examples": [{"word": "短い", "meaning_th": "สั้น"}, {"word": "短時間", "meaning_th": "ช่วงเวลาสั้นๆ"}]},
+        {"id": "kanji_080", "kanji": "高", "meaning_th": "สูง, แพง", "kunyomi": "たかい", "onyomi": "コウ", "vocabulary_examples": [{"word": "高い", "meaning_th": "สูง/แพง"}, {"word": "高校", "meaning_th": "มัธยมปลาย"}]},
+        {"id": "kanji_081", "kanji": "安", "meaning_th": "ปลอดภัย, ถูก", "kunyomi": "やすい", "onyomi": "アン", "vocabulary_examples": [{"word": "安い", "meaning_th": "ถูก"}, {"word": "安全", "meaning_th": "ปลอดภัย"}]},
+        {"id": "kanji_082", "kanji": "低", "meaning_th": "ต่ำ", "kunyomi": "ひくい", "onyomi": "テイ", "vocabulary_examples": [{"word": "低い", "meaning_th": "ต่ำ"}, {"word": "低温", "meaning_th": "อุณหภูมิต่ำ"}]},
+        {"id": "kanji_083", "kanji": "暗", "meaning_th": "มืด", "kunyomi": "くらい", "onyomi": "アン", "vocabulary_examples": [{"word": "暗い", "meaning_th": "มืด"}, {"word": "暗室", "meaning_th": "ห้องมืด"}]},
+        {"id": "kanji_084", "kanji": "多", "meaning_th": "มาก, เยอะ", "kunyomi": "おおい", "onyomi": "タ", "vocabulary_examples": [{"word": "多い", "meaning_th": "มาก/เยอะ"}, {"word": "多数", "meaning_th": "จำนวนมาก"}]},
+        {"id": "kanji_085", "kanji": "少", "meaning_th": "น้อย", "kunyomi": "すくない", "onyomi": "ショウ", "vocabulary_examples": [{"word": "少ない", "meaning_th": "น้อย"}, {"word": "少し", "meaning_th": "เล็กน้อย"}]}
+      ],
+      "grammar": [
+        {"id": "gram_001", "chapter": 12, "title": "もっと", "usage": "もっと + คำขยาย", "meaning_th": "...กว่านี้ / มากขึ้น", "example": "もっと大きい (ใหญ่กว่านี้)"},
+        {"id": "gram_002", "chapter": 12, "title": "で (เครื่องมือ)", "usage": "N + で + V", "meaning_th": "ทำ...ด้วย / โดยใช้...", "example": "スプーンで食べます。(กินด้วยช้อน)"},
+        {"id": "gram_003", "chapter": 12, "title": "Adj.い → 副詞", "usage": "ตัด い เติม く + V", "meaning_th": "เปลี่ยนคำคุณศัพท์เป็นกริยาวิเศษณ์", "example": "早く起きる (ตื่นเร็ว)"},
+        {"id": "gram_004", "chapter": 12, "title": "なる", "usage": "Adj.い → くなります / N → になります", "meaning_th": "กลายเป็น... / เปลี่ยนเป็น...", "example": "高くなります (แพงขึ้น)"},
+        {"id": "gram_005", "chapter": 12, "title": "～と", "usage": "V รูปธรรมดา + と", "meaning_th": "ถ้า...แล้ว / พอ...ก็...", "example": "食べると、眠くなります。"},
+        {"id": "gram_006", "chapter": 12, "title": "รูปปฏิเสธ ～ない", "usage": "กลุ่ม 1: เสียง あ+ない / กลุ่ม 2: ตัดる+ない", "meaning_th": "รูปปฏิเสธแบบกันเอง", "example": "買わない (ไม่ซื้อ)"},
+        {"id": "gram_007", "chapter": 13, "title": "รูปธรรมดา Adj./N", "usage": "Adj.い: 楽しい / N: 問題だ", "meaning_th": "รูปบอกเล่า/ปฏิเสธแบบเป็นกันเอง", "example": "静かだ (เงียบ)"},
+        {"id": "gram_008", "chapter": 13, "title": "N + の + N", "usage": "N + の + N", "meaning_th": "เชื่อมคำนามขยายนาม", "example": "父からの手紙 (จดหมายจากพ่อ)"},
+        {"id": "gram_009", "chapter": 13, "title": "Relative Clause", "usage": "[V รูปธรรมดา] + N", "meaning_th": "ประโยคขยายนาม (N ที่...)", "example": "立っている学生 (นักเรียนที่กำลังยืน)"},
+        {"id": "gram_010", "chapter": 13, "title": "～と思います", "usage": "รูปธรรมดา + と思います", "meaning_th": "คิดว่า...", "example": "雨だと思います。(คิดว่าฝนตก)"},
+        {"id": "gram_011", "chapter": 13, "title": "どうして～からです", "usage": "ถาม: どうして？ / ตอบ: ～からです", "meaning_th": "ถามเหตุผล (ทำไม? / เพราะว่า...)", "example": "忙しいからです。(เพราะว่ายุ่ง)"},
+        {"id": "gram_012", "chapter": 13, "title": "Vにくい / Vやすい", "usage": "Vตัดます + にくい/やすい", "meaning_th": "ทำยาก / ทำง่าย", "example": "覚えにくい (จำยาก)"},
+        {"id": "gram_013", "chapter": 13, "title": "～から", "usage": "สาเหตุ + から、ผลลัพธ์", "meaning_th": "เพราะ...จึง...", "example": "高いから、買いません。(เพราะแพงจึงไม่ซื้อ)"},
+        {"id": "gram_014", "chapter": 13, "title": "～時は", "usage": "คำขยาย + 時は", "meaning_th": "ตอนที่... / เวลาที่...", "example": "勉強する時は... (ตอนที่อ่านหนังสือ...)"}
+      ]
+    };
+
+    let currentTab = 'vocab';
+    let quizScore = 0;
+    let speedTimer = null;
+    let selectedMatchCard = null;
+    let matchPairsCount = 6;
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const searchBox = document.getElementById('searchBox');
+      const cardsContainer = document.getElementById('cardsContainer');
+      const gameArea = document.getElementById('gameArea');
+
+      if (['vocab', 'kanji', 'grammar'].includes(tab)) {
+        searchBox.classList.remove('hidden');
+        cardsContainer.classList.remove('hidden');
+        gameArea.classList.add('hidden');
+        renderCards();
+      } else {
+        searchBox.classList.add('hidden');
+        cardsContainer.classList.add('hidden');
+        gameArea.classList.remove('hidden');
+        if (tab === 'quiz') startQuiz();
+        else if (tab === 'matching') startMatchingGame();
+        else if (tab === 'speed') startSpeedChallenge();
+        else if (tab === 'dict') renderDictionary();
+      }
+    }
+
+    function speak(text) {
+      event.stopPropagation();
+      const uttr = new SpeechSynthesisUtterance(text);
+      uttr.lang = 'ja-JP';
+      speechSynthesis.speak(uttr);
+    }
+
+    /* 🎯 ควิซตอบคำถาม */
+    function startQuiz() {
+      quizScore = 0;
+      nextQuizQuestion();
+    }
+
+    function nextQuizQuestion() {
+      const vocabList = appData.vocabulary;
+      const target = vocabList[Math.floor(Math.random() * vocabList.length)];
+      
+      let options = [target.meaning_th];
+      while (options.length < 4) {
+        let randMeaning = vocabList[Math.floor(Math.random() * vocabList.length)].meaning_th;
+        if (!options.includes(randMeaning)) options.push(randMeaning);
+      }
+      options.sort(() => Math.random() - 0.5);
+
+      const gameArea = document.getElementById('gameArea');
+      gameArea.innerHTML = `
+        <div class="game-box">
+          <div class="game-title">🎯 ควิซตอบคำถาม</div>
+          <div style="font-size:0.95rem;">คะแนนสะสม: <b>${quizScore}</b></div>
+          <div class="quiz-question">${target.word} (${target.reading})</div>
+          <div class="options-grid">
+            ${options.map(opt => `<button class="option-btn" onclick="checkQuizAnswer('${opt}', '${target.meaning_th}')">${opt}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function checkQuizAnswer(selected, correct) {
+      if (selected === correct) {
+        alert("✨ ถูกต้องครับ! +1 คะแนน");
+        quizScore++;
+      } else {
+        alert(`❌ ยังไม่ถูกนะครับ คำตอบคือ: ${correct}`);
+      }
+      nextQuizQuestion();
+    }
+
+    /* 🧩 เกมจับคู่ */
+    function changeMatchCount(count) {
+      matchPairsCount = count;
+      startMatchingGame();
+    }
+
+    function startMatchingGame() {
+      const vocabList = [...appData.vocabulary].sort(() => Math.random() - 0.5).slice(0, matchPairsCount);
+      let cards = [];
+      vocabList.forEach(item => {
+        cards.push({ id: item.id, text: item.word, type: 'jp' });
+        cards.push({ id: item.id, text: item.meaning_th, type: 'th' });
+      });
+      cards.sort(() => Math.random() - 0.5);
+
+      selectedMatchCard = null;
+      const gameArea = document.getElementById('gameArea');
+      gameArea.innerHTML = `
+        <div class="game-box" style="max-width:700px;">
+          <div class="game-title">🧩 เกมจับคู่คำศัพท์</div>
+          <div style="font-size:0.85rem; color:#666; margin-bottom:10px;">เลือกจำนวนการ์ดที่จะเล่น:</div>
+          <div class="match-controls">
+            <button class="tab-btn ${matchPairsCount === 6 ? 'active' : ''}" onclick="changeMatchCount(6)">6 คู่ (12 ใบ)</button>
+            <button class="tab-btn ${matchPairsCount === 8 ? 'active' : ''}" onclick="changeMatchCount(8)">8 คู่ (16 ใบ)</button>
+            <button class="tab-btn ${matchPairsCount === 10 ? 'active' : ''}" onclick="changeMatchCount(10)">10 คู่ (20 ใบ)</button>
+          </div>
+          <div class="match-grid">
+            ${cards.map((c, i) => `<div class="match-card" id="mc-${i}" onclick="handleMatchSelect(${i}, '${c.id}')">${c.text}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function handleMatchSelect(index, id) {
+      const cardElem = document.getElementById(`mc-${index}`);
+      if (cardElem.classList.contains('matched')) return;
+
+      if (!selectedMatchCard) {
+        selectedMatchCard = { index, id, elem: cardElem };
+        cardElem.classList.add('selected');
+      } else {
+        if (selectedMatchCard.index === index) return;
+
+        if (selectedMatchCard.id === id) {
+          cardElem.classList.add('matched');
+          selectedMatchCard.elem.classList.add('matched');
+          selectedMatchCard = null;
+        } else {
+          cardElem.classList.add('selected');
+          setTimeout(() => {
+            cardElem.classList.remove('selected');
+            selectedMatchCard.elem.classList.remove('selected');
+            selectedMatchCard = null;
+          }, 400);
+        }
+      }
+    }
+
+    /* ⚡ สปีดชาเลนจ์ (เพิ่มคำอ่านภาษาญี่ปุ่น) */
+    function startSpeedChallenge() {
+      let score = 0;
+      let timeLeft = 30;
+      clearInterval(speedTimer);
+
+      const gameArea = document.getElementById('gameArea');
+      
+      function renderSpeedQuestion() {
+        const vocabList = appData.vocabulary;
+        const target = vocabList[Math.floor(Math.random() * vocabList.length)];
+        let options = [target.meaning_th];
+        while (options.length < 4) {
+          let randMeaning = vocabList[Math.floor(Math.random() * vocabList.length)].meaning_th;
+          if (!options.includes(randMeaning)) options.push(randMeaning);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        // แสดงผลตัวอักษร + คำอ่าน (ถ้าตัวอักษรกับคำอ่านเหมือนกัน จะแสดงตัวเดียว)
+        const displayText = (target.word === target.reading) 
+          ? target.word 
+          : `${target.word} <span style="font-size:1.1rem; color:#8a63d2; font-weight:normal;">(${target.reading})</span>`;
+
+        gameArea.innerHTML = `
+          <div class="game-box">
+            <div class="game-title">⚡ สปีดชาเลนจ์ (30 วินาที)</div>
+            <div style="font-size:1.3rem; color:#ff6b81; font-weight:bold; margin-bottom:8px;">⏰ เวลาเหลือ: <span id="timerText">${timeLeft}</span> วินาที</div>
+            <div>คะแนน: <b>${score}</b></div>
+            <div class="quiz-question">${displayText}</div>
+            <div class="options-grid">
+              ${options.map(opt => `<button class="option-btn" onclick="answerSpeed('${opt}', '${target.meaning_th}')">${opt}</button>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      window.answerSpeed = function(selected, correct) {
+        if (selected === correct) score++;
+        renderSpeedQuestion();
+      };
+
+      renderSpeedQuestion();
+
+      speedTimer = setInterval(() => {
+        timeLeft--;
+        const timerElem = document.getElementById('timerText');
+        if (timerElem) timerElem.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(speedTimer);
+          gameArea.innerHTML = `
+            <div class="game-box">
+              <div class="game-title">🎉 หมดเวลา!</div>
+              <div style="font-size: 1.3rem; margin: 20px 0;">คะแนนรวมของคุณคือ: <b>${score}</b> คะแนน</div>
+              <button class="tab-btn active" onclick="startSpeedChallenge()">🔄 เล่นอีกครั้ง</button>
+            </div>
+          `;
+        }
+      }, 1000);
+    }
+
+    /* 📚 พจนานุกรม */
+    function renderDictionary() {
+      const gameArea = document.getElementById('gameArea');
+      let html = `<div class="game-box" style="max-width:700px; text-align:left;">
+        <div class="game-title" style="text-align:center;">📚 พจนานุกรมรวม</div>`;
+      
+      appData.vocabulary.forEach(v => {
+        html += `
+          <div class="dict-item">
+            <div>
+              <span style="font-size:1.1rem; font-weight:bold; color:#ff6b81;">${v.word}</span>
+              <span style="color:#8a63d2; font-size:0.85rem; margin-left:6px;">(${v.reading})</span>
+            </div>
+            <div style="font-size:0.9rem;">${v.meaning_th}</div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      gameArea.innerHTML = html;
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      container.innerHTML = '';
+
+      if (currentTab === 'vocab') {
+        appData.vocabulary.filter(item => 
+          item.word.toLowerCase().includes(searchText) || 
+          item.reading.toLowerCase().includes(searchText) || 
+          item.meaning_th.toLowerCase().includes(searchText)
+        ).forEach(item => {
+          container.innerHTML += `
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <span class="badge">${item.jlpt_level}</span>
+                  <div class="word-title">${item.word}</div>
+                  <div class="word-reading">${item.reading}</div>
+                  <button class="audio-btn" onclick="speak('${item.word}')">🔊</button>
+                </div>
+                <div class="flip-card-back">
+                  <div class="word-meaning">${item.meaning_th}</div>
+                  <span style="font-size: 0.75rem; margin-top: 6px; opacity:0.8;">${item.part_of_speech}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } else if (currentTab === 'kanji') {
+        appData.kanji.filter(item => 
+          item.kanji.includes(searchText) || 
+          item.meaning_th.includes(searchText)
+        ).forEach(item => {
+          let examples = item.vocabulary_examples.map(ex => `<div>• <b>${ex.word}</b> : ${ex.meaning_th}</div>`).join('');
+          container.innerHTML += `
+            <div class="kanji-card">
+              <div class="kanji-char">${item.kanji}</div>
+              <div style="font-weight:bold; color:#444;">${item.meaning_th}</div>
+              <div style="font-size:0.85rem; color:#666; margin:6px 0;">
+                <div><b>音:</b> ${item.onyomi}</div>
+                <div><b>訓:</b> ${item.kunyomi}</div>
+              </div>
+              <div style="text-align:left; font-size:0.8rem; background:var(--sakura-light); padding:8px; border-radius:10px; margin-top:8px;">${examples}</div>
+            </div>
+          `;
+        });
+      } else if (currentTab === 'grammar') {
+        appData.grammar.filter(item => 
+          item.title.toLowerCase().includes(searchText) || 
+          item.meaning_th.toLowerCase().includes(searchText)
+        ).forEach(item => {
+          container.innerHTML += `
+            <div class="grammar-card">
+              <span class="badge" style="background:#e2d4f9; color:#6842a8;">Lesson ${item.chapter}</span>
+              <div class="grammar-title">${item.title}</div>
+              <div class="grammar-usage">${item.usage}</div>
+              <div style="font-size:0.9rem;"><b>ความหมาย:</b> ${item.meaning_th}</div>
+              <div style="font-size:0.85rem; color:#555; margin-top:6px; padding-top:6px; border-top:1px dashed #eee;">💡 <b>ตัวอย่าง:</b> ${item.example}</div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function filterData() { renderCards(); }
+    renderCards();
+  </script>
+</body>
+</html>
